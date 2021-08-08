@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+
+		
+
+		<link rel="modulepreload" href="/./_app/start-bddbc0a0.js">
+		<link rel="modulepreload" href="/./_app/chunks/vendor-1dc3c5cc.js">
+		<link rel="modulepreload" href="/./_app/layout.svelte-6e6ec693.js">
+		<link rel="modulepreload" href="/./_app/pages/index.svelte-83d0a3a1.js">
+		<link rel="stylesheet" href="/./_app/assets/start-a8cd1609.css">
+		<link rel="stylesheet" href="/./_app/assets/vendor-7ed21011.css">
+		<link rel="stylesheet" href="/./_app/assets/pages/index.svelte-04aeca0d.css">
+
+		<script type="module">
+			import { start } from "/./_app/start-bddbc0a0.js";
+			start({
+				target: document.querySelector("#svelte"),
+				paths: {"base":"","assets":"/."},
+				session: {},
+				host: location.host,
+				route: true,
+				spa: false,
+				trailing_slash: "never",
+				hydrate: {
+					status: 200,
+					error: null,
+					nodes: [
+						import("/./_app/layout.svelte-6e6ec693.js"),
+						import("/./_app/pages/index.svelte-83d0a3a1.js")
+					],
+					page: {
+						host: location.host, // TODO this is redundant
+						path: "/",
+						query: new URLSearchParams(""),
+						params: {}
+					}
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="svelte">
+
+
+<div class="controls svelte-17ynm7t"><div class="main-container svelte-8esefu"><div class="colorsquare size svelte-8esefu"><div class="saturation-gradient svelte-8esefu"><div class="value-gradient svelte-8esefu"><div id="colorsquare-picker" class="svelte-8esefu"></div>
+              <div id="colorsquare-event" class="svelte-8esefu"></div></div></div></div>
+
+  <div class="hue-selector svelte-8esefu"><div id="hue-picker" class="svelte-8esefu"></div>
+      <div id="hue-event" class="svelte-8esefu"></div></div>
+
+  <div class="alpha-selector svelte-8esefu"><div class="alpha-value svelte-8esefu"></div>
+      <div id="alpha-picker" class="svelte-8esefu"></div>
+      <div id="alpha-event" class="svelte-8esefu"></div></div>
+
+  <div class="color-info-box svelte-8esefu"><div class="color-picked-bg svelte-8esefu"><div class="color-picked svelte-8esefu"></div></div>
+
+    <div class="hex-text-block svelte-8esefu"><p class="text svelte-8esefu">#FF0000</p></div>
+
+    <div class="rgb-text-div svelte-8esefu"><div class="rgb-text-block svelte-8esefu"><p class="text svelte-8esefu">255</p>
+        <p class="text-label svelte-8esefu">R</p></div>
+
+      <div class="rgb-text-block svelte-8esefu"><p class="text svelte-8esefu">0</p>
+        <p class="text-label svelte-8esefu">G</p></div>
+
+      <div class="rgb-text-block svelte-8esefu"><p class="text svelte-8esefu">0</p>
+        <p class="text-label svelte-8esefu">B</p></div></div></div></div>
+    <div style="display: flex; flex-direction: column; align-items: center; text-align: center; flex-grow: 2; margin: 12px; justify-content: center; max-height: 300px; overflow: auto;"><button class="colorButton svelte-17ynm7t" style="background-color: #000000; border: 2px solid black;"></button></div>
+    <input type="range" orient="vertical" class="svelte-17ynm7t" value="60"></div>
+
+
+
+<textarea class="svelte-17ynm7t"></textarea>
+
+
+
+	
+</div>
+	</body>
+	<style>
+		body {
+			margin: 0px;
+		}
+	</style>
+</html>
