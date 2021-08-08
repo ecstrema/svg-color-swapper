@@ -19,7 +19,7 @@ const config = {
 			base: '/SVGColorSwap',
 			assets: '/SVGColorSwap',
 		},
-		appDir: "app_",
+		appDir: "internal",
 
 		// hydrate the <div id="svelte"> element in src/app.html
 		target: '#svelte',
