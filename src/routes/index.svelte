@@ -5,7 +5,8 @@
     let selectedColorIndex = 0;
 
     let svgText = "";
-    let svgHeight = 80;
+    let svgHeight = 60;
+    let svgWrapper;
 
     $: {
         const regs = [
@@ -68,17 +69,17 @@
         svgText = svgText.replace(new RegExp(allColors[selectedColorIndex], "gi"), newColorStr);
         allColors[selectedColorIndex] = newColorStr;
     }
-    $: {
-        const svgElement = document.querySelector("svg")
-        if(svgElement) svgElement.setAttribute("style", svgHeight + "vh");
-        }
+    $: if (svgWrapper) svgWrapper.setAttribute("style", "height: " + svgHeight + "vh");
+
 </script>
 
-<div style="display: flex; justify-content: space-around;">
+<div class="controls">
     <HsvPicker on:colorChange={colorChanged} startColor={allColors[selectedColorIndex]}/>
     <div style="display: flex; flex-direction: column; align-items: center; text-align: center; flex-grow: 2; margin: 12px; justify-content: center; max-height: 300px; overflow: auto;">
         {#each allColors as color, index (color)}
-        <div style='height: 20px; width: 100%; background-color: {color}; height: 30px; max-height: 30px; min-height: 30px; box-sizing: border-box; margin-top: 4px; cursor: pointer; {selectedColorIndex === index ? "border: 2px solid black;" : "padding: 2px;"}' on:click="{(() => selectedColorIndex = index)}"></div>
+        <button class="colorButton"
+             style='background-color: {color}; {selectedColorIndex === index ? "border: 2px solid black;" : "padding: 2px;"}'
+             on:click="{(() => selectedColorIndex = index)}"></button>
         {:else}
         <p style="margin: 24px">
             No color found in your svg element
@@ -88,23 +89,44 @@
     <input type="range" orient="vertical" bind:value={svgHeight}/>
 </div>
 
-<div style="text-align: center;">
+{#if svgText}
+<div bind:this={svgWrapper} class="svgWrapper">
     {@html svgText}
 </div>
+{/if}
 
 <textarea bind:value={svgText}></textarea>
 
 <style>
-    textarea {
-        width: 100%;
-        height: 200px;
+    .controls {
+        display: flex; justify-content: space-around;
     }
-    :global(svg) {
-        height: 60vh;
-        width: auto;
+    .colorButton {
+        height: 20px; width: 100%;
+        height: 30px;
+        max-height: 30px;
+        min-height: 30px;
+        box-sizing: border-box;
+        margin-top: 4px;
+        cursor: pointer;
     }
     input[type=range][orient=vertical] {
         writing-mode: bt-lr; /* IE */
         -webkit-appearance: slider-vertical; /* WebKit */
+    }
+    .svgWrapper {
+        text-align: center;
+        max-height: 30vh;
+    }
+    :global(svg) {
+        height: 100%;
+        width: auto;
+    }
+    textarea {
+        position: fixed;
+        left: 1vw;
+        bottom: 1vh;
+        width: 96vw;
+        height: 18vh;
     }
 </style>
