@@ -116,16 +116,13 @@
     }
     .svgWrapper {
         text-align: center;
-        max-height: 30vh;
     }
     :global(svg) {
         height: 100%;
         width: auto;
     }
     textarea {
-        position: fixed;
-        left: 1vw;
-        bottom: 1vh;
+        margin-left: 1vw;
         width: 96vw;
         height: 18vh;
     }
