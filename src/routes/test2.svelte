@@ -29,19 +29,7 @@
             const svgText = e.target.result;
             svgWrapper.innerHTML = svgText;
 
-            const nums = ["3", "4", "6", "8"];
-            const fillRegExps = [
-                ...nums.map((n: string) => new RegExp(`fill:(#[a-f0-9]{${n}})`, "gi")),
-                ...nums.map((n: string) => new RegExp(`fill=(#[a-f0-9]{${n}})`, "gi")),
-            ]
-            const strokeRegExps = [
-                ...nums.map((n: string) => new RegExp(`stroke:(#[a-f0-9]{${n}})`, "gi")),
-                ...nums.map((n: string) => new RegExp(`stroke=(#[a-f0-9]{${n}})`, "gi")),
-            ]
-
             function getColors(node: HTMLElement) {
-                const style = node.getAttribute("style");
-
                 const fill = node.style.fill;
                 const stroke = node.style.stroke;
                 if (fill) {
