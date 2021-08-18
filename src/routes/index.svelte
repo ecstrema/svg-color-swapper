@@ -2,7 +2,7 @@
     import { ColorPicker, Color } from 'svelte-colorpick';
 
     let allColors = ["#000000"];
-    let selectedColorIndex = 0;
+    let selectedColor = "#000000";
 
     let svgText = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -53 100 100" stroke-width="2"><g fill="none"><ellipse stroke="#66899a" rx="6" ry="44"/><ellipse stroke="#e1d85d" rx="6" ry="44" transform="rotate(-66)"/><ellipse stroke="#80a3cf" rx="6" ry="44" transform="rotate(66)"/><circle stroke="#4b541f" r="44"/></g><g fill="#66899a" stroke="white"><circle fill="#80a3cf" r="13"/><circle cy="-44" r="9"/><circle cx="-40" cy="18" r="9"/><circle cx="40" cy="18" r="9"/></g></svg>`;
     let svgHeight = 60;
@@ -66,20 +66,20 @@
     function colorChanged(ev) {
         const {r, g, b, a} = ev.detail;
         const newColorStr = RGBAToHex(r, g, b, a);
-        svgText = svgText.replace(new RegExp(allColors[selectedColorIndex], "gi"), newColorStr);
-        allColors[selectedColorIndex] = newColorStr;
+        svgText = svgText.replace(new RegExp(selectedColor, "gi"), newColorStr);
+        allColors[allColors.indexOf(selectedColor)] = newColorStr;
     }
     $: if (svgWrapper) svgWrapper.setAttribute("style", "height: " + svgHeight + "vh");
 
 </script>
 
 <div class="controls">
-    <HsvPicker on:colorChange={colorChanged} startColor={allColors[selectedColorIndex]}/>
+    <ColorPicker bind:color={selectedColor}/>
     <div style="display: flex; flex-direction: column; align-items: center; text-align: center; flex-grow: 2; margin: 12px; justify-content: center; max-height: 300px; overflow: auto;">
-        {#each allColors as color, index (color)}
+        {#each allColors as color (color)}
         <button class="colorButton"
-             style='background-color: {color}; {selectedColorIndex === index ? "border: 2px solid black;" : "padding: 2px;"}'
-             on:click="{(() => selectedColorIndex = index)}"></button>
+             style='background-color: {color}; {selectedColor === color ? "border: 2px solid black;" : "padding: 2px;"}'
+             on:click="{(() => selectedColor = color)}"></button>
         {:else}
         <p style="margin: 24px">
             No color found in your svg element
