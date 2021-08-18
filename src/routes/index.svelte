@@ -1,38 +1,38 @@
-<script>
+<script lang="ts">
     import { ColorPicker, Color } from 'svelte-colorpick';
 
     let allColors = ["#000000"];
-    let selectedColor = "#000000";
+    let selectedColor = Color.hex("#000000");
 
     let svgText = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -53 100 100" stroke-width="2"><g fill="none"><ellipse stroke="#66899a" rx="6" ry="44"/><ellipse stroke="#e1d85d" rx="6" ry="44" transform="rotate(-66)"/><ellipse stroke="#80a3cf" rx="6" ry="44" transform="rotate(66)"/><circle stroke="#4b541f" r="44"/></g><g fill="#66899a" stroke="white"><circle fill="#80a3cf" r="13"/><circle cy="-44" r="9"/><circle cx="-40" cy="18" r="9"/><circle cx="40" cy="18" r="9"/></g></svg>`;
     let svgHeight = 60;
-    let svgWrapper;
+    let svgWrapper: HTMLDivElement;
 
     $: {
         const regs = [
-            /fill:(#[a-f0-9]{3})/gi,
-            /fill:(#[a-f0-9]{4})/gi,
-            /fill:(#[a-f0-9]{6})/gi,
+            // /fill:(#[a-f0-9]{3})/gi,
+            // /fill:(#[a-f0-9]{4})/gi,
+            // /fill:(#[a-f0-9]{6})/gi,
             /fill:(#[a-f0-9]{8})/gi,
-            /fill="(#[a-f0-9]{3})"/gi,
-            /fill="(#[a-f0-9]{4})"/gi,
+            // /fill="(#[a-f0-9]{3})"/gi,
+            // /fill="(#[a-f0-9]{4})"/gi,
             /fill="(#[a-f0-9]{6})"/gi,
-            /fill="(#[a-f0-9]{8})"/gi,
-            /stroke:(#[a-f0-9]{3})"/gi,
-            /stroke:(#[a-f0-9]{4})"/gi,
+            // /fill="(#[a-f0-9]{8})"/gi,
+            // /stroke:(#[a-f0-9]{3})"/gi,
+            // /stroke:(#[a-f0-9]{4})"/gi,
             /stroke:(#[a-f0-9]{6})"/gi,
-            /stroke:(#[a-f0-9]{8})"/gi,
-            /stroke="(#[a-f0-9]{3})"/gi,
-            /stroke="(#[a-f0-9]{4})"/gi,
+            // /stroke:(#[a-f0-9]{8})"/gi,
+            // /stroke="(#[a-f0-9]{3})"/gi,
+            // /stroke="(#[a-f0-9]{4})"/gi,
             /stroke="(#[a-f0-9]{6})"/gi,
-            /stroke="(#[a-f0-9]{8})"/gi,
+            // /stroke="(#[a-f0-9]{8})"/gi,
         ]
         for (const reg of regs) {
             const matches = [...svgText.matchAll(reg)]
             if (matches.length) {
                 for (const match of matches) {
                     if (allColors.indexOf(match[1]) === -1) {
-                        allColors.push(match[1])
+                        allColors.push(Color.hex(match[1]))
                     }
                 }
             }

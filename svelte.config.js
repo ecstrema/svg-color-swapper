@@ -16,8 +16,7 @@ const config = {
 
 		// Comment the paths if wants to run in dev mode.
 		paths: {
-			base: '/SVGColorSwap',
-			assets: '/SVGColorSwap',
+			// base: '/SVGColorSwap',
 		},
 		appDir: "internal",
 
