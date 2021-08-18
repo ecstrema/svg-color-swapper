@@ -31,6 +31,6 @@
   "type": "module",
   "dependencies": {
     "gh-pages": "^3.2.3",
-    "svelte-color-picker": "^1.0.7"
+    "svelte-colorpick": "^0.1.7"
   }
 }
