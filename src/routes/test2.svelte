@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { ColorPicker, Color as ColorP } from 'svelte-colorpick';
     import Color from "color";
 
-    import { recursively } from "../lib/recursively";
+    import { recursively } from "$lib/recursively";
+    import Colorpick from '$lib/colorpick.svelte';
 
     let svgHeight = 60;
     let svgWrapper: HTMLDivElement;
@@ -10,7 +10,9 @@
     type ColorTargets = { filled: HTMLElement[], stroked: HTMLElement[] };
     let colorData: Map<string, ColorTargets> = new Map();
 
+    let selectedColorIndex: number = 0;
     $: allColors = Array.from(colorData.keys());
+    $: selectedColor = allColors[selectedColorIndex];
 
     $: if (svgWrapper) svgWrapper.setAttribute("style", "height: " + svgHeight + "vh");
 
@@ -24,7 +26,6 @@
                 console.error("Error reading file");
                 return;
             }
-
 
             const svgText = e.target.result;
             svgWrapper.innerHTML = svgText;
@@ -56,26 +57,29 @@
 
             recursively(svgWrapper, getColors)
             colorData = colorData;
+            console.log(colorData);
         }
         reader.readAsText(file);
     }
 </script>
 
+<Colorpick/>
+
 <input type="file" accept=".svg" on:change="{onFileChange}" />
 
 <div class="controls">
-    <ColorPicker bind:color={selectedColor}/>
     <div style="display: flex; flex-direction: column; align-items: center; text-align: center; flex-grow: 2; margin: 12px; justify-content: center; max-height: 300px; overflow: auto;">
-        {#each allColors as color (color)}
+        {#each allColors as color, index (color)}
         <button class="colorButton"
-             style='background-color: {color}; {selectedColor === color ? "border: 2px solid black;" : "padding: 2px;"}'
-             on:click="{(() => selectedColor = color)}"></button>
+             style='background-color: {color}; {index === selectedColorIndex ? "border: 2px solid black;" : "padding: 2px;"}'
+             on:click="{(() => selectedColorIndex = index)}"></button>
         {:else}
         <p style="margin: 24px">
             No color found in your svg element
         </p>
         {/each}
     </div>
+    // @ts-ignore
     <input type="range" orient="vertical" bind:value={svgHeight}/>
 </div>
 
@@ -106,10 +110,5 @@
     :global(svg) {
         height: 100%;
         width: auto;
-    }
-    textarea {
-        margin-left: 1vw;
-        width: 96vw;
-        height: 18vh;
     }
 </style>
