@@ -131,12 +131,12 @@
         <button on:click={download}>Download Result</button>
     </div>
     <input type="range" orient="vertical" bind:value={svgHeight}/>
-    <div class="colors">
+    <div class="colors" style="{collapse ? 'overflow: visible;' : 'overflow: auto;'}" >
         {#each allColors as color (color)}
         <Colorpick color="{color}"
             on:change={(ev) => colorChanged(color, ev.detail.color)}
-            bind:showHex={showHex}
-            bind:collapse={collapse}
+            showHex={showHex}
+            collapse={collapse}
             />
         {:else}
         <p style="margin: 24px">
@@ -167,7 +167,6 @@
         flex-grow: 2;
         margin: 12px;
         justify-content: center;
-        overflow: auto;
         max-height: 50vh;
     }
     input[type=range][orient=vertical] {
