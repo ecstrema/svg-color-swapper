@@ -1,114 +1,174 @@
 <script lang="ts">
-    import { ColorPicker, Color } from 'svelte-colorpick';
+    import { onMount } from "svelte";
+    import Color from "color";
 
-    let allColors = ["#000000"];
-    let selectedColor = Color.hex("#000000");
+    import { recursively } from "$lib/recursively";
+    import Colorpick from '$lib/colorpick.svelte';
 
-    let svgText = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -53 100 100" stroke-width="2"><g fill="none"><ellipse stroke="#66899a" rx="6" ry="44"/><ellipse stroke="#e1d85d" rx="6" ry="44" transform="rotate(-66)"/><ellipse stroke="#80a3cf" rx="6" ry="44" transform="rotate(66)"/><circle stroke="#4b541f" r="44"/></g><g fill="#66899a" stroke="white"><circle fill="#80a3cf" r="13"/><circle cy="-44" r="9"/><circle cx="-40" cy="18" r="9"/><circle cx="40" cy="18" r="9"/></g></svg>`;
     let svgHeight = 60;
     let svgWrapper: HTMLDivElement;
+    let showHex = false;
+    let collapse = false;
 
-    $: {
-        const regs = [
-            // /fill:(#[a-f0-9]{3})/gi,
-            // /fill:(#[a-f0-9]{4})/gi,
-            // /fill:(#[a-f0-9]{6})/gi,
-            /fill:(#[a-f0-9]{8})/gi,
-            // /fill="(#[a-f0-9]{3})"/gi,
-            // /fill="(#[a-f0-9]{4})"/gi,
-            /fill="(#[a-f0-9]{6})"/gi,
-            // /fill="(#[a-f0-9]{8})"/gi,
-            // /stroke:(#[a-f0-9]{3})"/gi,
-            // /stroke:(#[a-f0-9]{4})"/gi,
-            /stroke:(#[a-f0-9]{6})"/gi,
-            // /stroke:(#[a-f0-9]{8})"/gi,
-            // /stroke="(#[a-f0-9]{3})"/gi,
-            // /stroke="(#[a-f0-9]{4})"/gi,
-            /stroke="(#[a-f0-9]{6})"/gi,
-            // /stroke="(#[a-f0-9]{8})"/gi,
-        ]
-        for (const reg of regs) {
-            const matches = [...svgText.matchAll(reg)]
-            if (matches.length) {
-                for (const match of matches) {
-                    if (allColors.indexOf(match[1]) === -1) {
-                        allColors.push(Color.hex(match[1]))
-                    }
-                }
-            }
-        }
-        allColors = [...allColors];
-    }
+    type ColorTargets = { filled: HTMLElement[], stroked: HTMLElement[] };
+    type ColorData = { [key: string]: ColorTargets };
+    let colorData: ColorData = {};
 
-    /**
-    * @param {number | string} r red
-    * @param {number | string} g green
-    * @param {number | string} b blue
-    * @param {number | string | any} a alpha
-    */
-    function RGBAToHex(r, g, b, a) {
-        r = r.toString(16);
-        g = g.toString(16);
-        b = b.toString(16);
-        a = Math.ceil(a * 255).toString(16);
+    $: allColors = Array.from(Object.keys(colorData));
 
-        if (r.length == 1)
-            r = "0" + r;
-        if (g.length == 1)
-            g = "0" + g;
-        if (b.length == 1)
-            b = "0" + b;
-        if (a.length == 1)
-            a = "0" + a;
-
-        return "#" + r + g + b + a;
-    }
-    function colorChanged(ev) {
-        const {r, g, b, a} = ev.detail;
-        const newColorStr = RGBAToHex(r, g, b, a);
-        svgText = svgText.replace(new RegExp(selectedColor, "gi"), newColorStr);
-        allColors[allColors.indexOf(selectedColor)] = newColorStr;
-    }
     $: if (svgWrapper) svgWrapper.setAttribute("style", "height: " + svgHeight + "vh");
 
+    function getColors(node: HTMLElement) {
+        let fill = node.style.fill;
+        if (fill === "") {
+            fill = node.getAttribute("fill");
+        }
+        if (fill && fill !== "none" && fill !== "") {
+            const color = Color(fill);
+            const hex = color.hex().toUpperCase();
+            if (colorData.hasOwnProperty(hex)) {
+                colorData[hex].filled.push(node);
+            }
+            else {
+                colorData[hex] = { filled: [node], stroked: [] };
+            }
+        }
+        let stroke = node.style.stroke;
+        if (stroke === "") {
+            stroke = node.getAttribute("stroke");
+        }
+        if (stroke && stroke !== "none" && stroke !== "") {
+            const color = Color(stroke);
+            const hex = color.hex().toUpperCase();
+            if (colorData.hasOwnProperty(hex)) {
+                colorData[hex].stroked.push(node);
+            }
+            else {
+                colorData[hex] = { filled: [], stroked: [node] };
+            }
+        }
+    }
+
+
+    function onFileChange(ev: Event) {
+        const target = ev.target as HTMLInputElement;
+        const files = target.files;
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            if (typeof e.target.result !== "string") {
+                console.error("Error reading file");
+                return;
+            }
+
+            const svgText = e.target.result;
+            svgWrapper.innerHTML = svgText;
+
+            // reset color data
+            colorData = {};
+
+            recursively(svgWrapper, getColors);
+            if (Object.keys(colorData).length > 10) {
+                collapse = true;
+            }
+            colorData = colorData;
+        }
+        reader.readAsText(file);
+    }
+
+    function colorChanged(oldColor: string, newColor: string) {
+        oldColor = oldColor.toUpperCase();
+        newColor = newColor.toUpperCase();
+
+        if (!colorData.hasOwnProperty(oldColor)) return;
+
+        const filled = colorData[oldColor].filled;
+        for (const f of filled) {
+            //https://stackoverflow.com/a/2028029/9329985
+            f.style.fill = "";
+            f.setAttribute("fill", newColor);
+        }
+
+        const stroked = colorData[oldColor].stroked;
+        for (const s of stroked) {
+            //https://stackoverflow.com/a/2028029/9329985
+            s.style.stroke = "";
+            s.setAttribute("stroke", newColor);
+        }
+        // make a copy first
+        // colorData[oldColor] = { filled: [], stroked: [] };
+        // delete colorData[oldColor];
+    }
+
+    function download() {
+        const svg = svgWrapper.outerHTML;
+        const blob = new Blob([svg], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "recolored.svg";
+        a.click();
+    }
+
+    onMount(() => {
+        recursively(svgWrapper, getColors);
+        colorData = colorData;
+    })
 </script>
 
+
 <div class="controls">
-    <ColorPicker bind:color={selectedColor}/>
-    <div style="display: flex; flex-direction: column; align-items: center; text-align: center; flex-grow: 2; margin: 12px; justify-content: center; max-height: 300px; overflow: auto;">
+    <div class="specificControls">
+        <input type="file" accept=".svg" on:change="{onFileChange}" />
+        <div>
+            <input id='collapse' type='checkbox' bind:checked={collapse}/>
+            <label for='collapse'>collapse</label>
+        </div>
+        <div>
+            <input id='showHex' type='checkbox' bind:checked={showHex}/>
+            <label for='showHex'>Show Hex</label>
+        </div>
+        <button on:click={download}>Download Result</button>
+    </div>
+    <input type="range" orient="vertical" bind:value={svgHeight}/>
+    <div class="colors">
         {#each allColors as color (color)}
-        <button class="colorButton"
-             style='background-color: {color}; {selectedColor === color ? "border: 2px solid black;" : "padding: 2px;"}'
-             on:click="{(() => selectedColor = color)}"></button>
+        <Colorpick color="{color}"
+            on:change={(ev) => colorChanged(color, ev.detail.color)}
+            bind:showHex={showHex}
+            bind:collapse={collapse}
+            />
         {:else}
         <p style="margin: 24px">
             No color found in your svg element
         </p>
         {/each}
     </div>
-    <input type="range" orient="vertical" bind:value={svgHeight}/>
 </div>
 
-{#if svgText}
 <div bind:this={svgWrapper} class="svgWrapper">
-    {@html svgText}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -53 100 100" stroke-width="2"><g fill="none"><ellipse stroke="#66899a" rx="6" ry="44"/><ellipse stroke="#e1d85d" rx="6" ry="44" transform="rotate(-66)"/><ellipse stroke="#80a3cf" rx="6" ry="44" transform="rotate(66)"/><circle stroke="#4b541f" r="44"/></g><g fill="#66899a" stroke="white"><circle fill="#80a3cf" r="13"/><circle cy="-44" r="9"/><circle cx="-40" cy="18" r="9"/><circle cx="40" cy="18" r="9"/></g></svg>
 </div>
-{/if}
-
-<textarea bind:value={svgText}></textarea>
 
 <style>
-    .controls {
-        display: flex; justify-content: space-around;
+    .specificControls {
+        display: flex;
+        flex-direction: column;
     }
-    .colorButton {
-        height: 20px; width: 100%;
-        height: 30px;
-        max-height: 30px;
-        min-height: 30px;
-        box-sizing: border-box;
-        margin-top: 4px;
-        cursor: pointer;
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .colors {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        flex-grow: 2;
+        margin: 12px;
+        justify-content: center;
+        overflow: auto;
+        max-height: 50vh;
     }
     input[type=range][orient=vertical] {
         writing-mode: bt-lr; /* IE */
@@ -120,10 +180,5 @@
     :global(svg) {
         height: 100%;
         width: auto;
-    }
-    textarea {
-        margin-left: 1vw;
-        width: 96vw;
-        height: 18vh;
     }
 </style>
