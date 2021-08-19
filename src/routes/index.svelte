@@ -10,6 +10,9 @@
     let showHex = false;
     let collapse = false;
 
+    let modifyStrokes = true;
+    let modifyFills = true;
+
     type ColorTargets = { filled: HTMLElement[], stroked: HTMLElement[] };
     type ColorData = { [key: string]: ColorTargets };
     let colorData: ColorData = {};
@@ -76,28 +79,35 @@
         reader.readAsText(file);
     }
 
-    function colorChanged(oldColor: string, newColor: string) {
-        oldColor = oldColor.toUpperCase();
+    /**
+     * Sets all of the svg elements with initialColor to the new color.
+     *
+     * The model doesn't update to the new color, so that no confusion is possible
+     * between the modified colors.
+     */
+    function colorChanged(initialColor: string, newColor: string) {
+        initialColor = initialColor.toUpperCase();
         newColor = newColor.toUpperCase();
 
-        if (!colorData.hasOwnProperty(oldColor)) return;
+        if (!colorData.hasOwnProperty(initialColor)) return;
 
-        const filled = colorData[oldColor].filled;
-        for (const f of filled) {
-            //https://stackoverflow.com/a/2028029/9329985
-            f.style.fill = "";
-            f.setAttribute("fill", newColor);
+        if (modifyFills) {
+            const filled = colorData[initialColor].filled;
+            for (const f of filled) {
+                //https://stackoverflow.com/a/2028029/9329985
+                f.style.fill = "";
+                f.setAttribute("fill", newColor);
+            }
         }
 
-        const stroked = colorData[oldColor].stroked;
-        for (const s of stroked) {
-            //https://stackoverflow.com/a/2028029/9329985
-            s.style.stroke = "";
-            s.setAttribute("stroke", newColor);
+        if (modifyStrokes) {
+            const stroked = colorData[initialColor].stroked;
+            for (const s of stroked) {
+                //https://stackoverflow.com/a/2028029/9329985
+                s.style.stroke = "";
+                s.setAttribute("stroke", newColor);
+            }
         }
-        // make a copy first
-        // colorData[oldColor] = { filled: [], stroked: [] };
-        // delete colorData[oldColor];
     }
 
     function download() {
@@ -128,6 +138,17 @@
             <input id='showHex' type='checkbox' bind:checked={showHex}/>
             <label for='showHex'>Show Hex</label>
         </div>
+        <div>
+            <input id='modifyStrokes' type='checkbox' bind:checked={modifyStrokes}/>
+            <label for='modifyStrokes'>Modify Strokes</label>
+        </div>
+        <div>
+            <input id='modifyFills' type='checkbox' bind:checked={modifyFills}/>
+            <label for='modifyFills'>Modify Fills</label>
+        </div>
+        {#if !modifyFills && !modifyStrokes}
+            <p style="color: red;">Nothing will be modified, since neither the strokes nor the fills will be.</p>
+        {/if}
         <button on:click={download}>Download Result</button>
     </div>
     <input type="range" orient="vertical" bind:value={svgHeight}/>
