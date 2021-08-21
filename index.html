@@ -8,17 +8,16 @@
 
 		
 
-		<link rel="modulepreload" href="/SVGColorSwap/internal/start-68236f15.js">
-		<link rel="modulepreload" href="/SVGColorSwap/internal/chunks/vendor-af427fb3.js">
-		<link rel="modulepreload" href="/SVGColorSwap/internal/layout.svelte-e840c564.js">
-		<link rel="modulepreload" href="/SVGColorSwap/internal/pages/index.svelte-009f5b8d.js">
-		<link rel="modulepreload" href="/SVGColorSwap/internal/chunks/colorpick-72a94587.js">
+		<link rel="modulepreload" href="/SVGColorSwap/internal/start-05d2f9e7.js">
+		<link rel="modulepreload" href="/SVGColorSwap/internal/chunks/vendor-d90b183f.js">
+		<link rel="modulepreload" href="/SVGColorSwap/internal/layout.svelte-ac7e89a3.js">
+		<link rel="modulepreload" href="/SVGColorSwap/internal/pages/index.svelte-da9359d8.js">
 		<link rel="stylesheet" href="/SVGColorSwap/internal/assets/start-61d1577b.css">
 		<link rel="stylesheet" href="/SVGColorSwap/internal/assets/vendor-1047d8e1.css">
-		<link rel="stylesheet" href="/SVGColorSwap/internal/assets/pages/index.svelte-07e5a7b6.css">
+		<link rel="stylesheet" href="/SVGColorSwap/internal/assets/pages/index.svelte-692420f2.css">
 
 		<script type="module">
-			import { start } from "/SVGColorSwap/internal/start-68236f15.js";
+			import { start } from "/SVGColorSwap/internal/start-05d2f9e7.js";
 			start({
 				target: document.querySelector("#svelte"),
 				paths: {"base":"/SVGColorSwap","assets":""},
@@ -31,8 +30,8 @@
 					status: 200,
 					error: null,
 					nodes: [
-						import("/SVGColorSwap/internal/layout.svelte-e840c564.js"),
-						import("/SVGColorSwap/internal/pages/index.svelte-009f5b8d.js")
+						import("/SVGColorSwap/internal/layout.svelte-ac7e89a3.js"),
+						import("/SVGColorSwap/internal/pages/index.svelte-da9359d8.js")
 					],
 					page: {
 						host: location.host, // TODO this is redundant
@@ -48,22 +47,51 @@
 		<div id="svelte">
 
 
-<div class="controls svelte-uvn0yn"><div class="specificControls svelte-uvn0yn"><input type="file" accept=".svg">
-        <div><input id="collapse" type="checkbox">
-            <label for="collapse">collapse</label></div>
-        <div><input id="showHex" type="checkbox">
-            <label for="showHex">Show Hex</label></div>
-        <div><input id="modifyStrokes" type="checkbox" checked>
-            <label for="modifyStrokes">Modify Strokes</label></div>
-        <div><input id="modifyFills" type="checkbox" checked>
-            <label for="modifyFills">Modify Fills</label></div>
-        
-        <button>Download Result</button></div>
-    <input type="range" orient="vertical" class="svelte-uvn0yn" value="60">
-    <div class="colors svelte-uvn0yn" style="overflow: auto;"><p style="margin: 24px">No color found in your svg element
-        </p></div></div>
+<div class="container svelte-9mofgm"><div class="leftSide svelte-9mofgm"><h2>Controls</h2>
+        <div class="controls svelte-9mofgm"><div class="leftControls svelte-9mofgm"><input type="file" accept=".svg">
+                <div><input id="modifyStrokes" type="checkbox" checked>
+                    <label for="modifyStrokes">Modify Strokes</label></div>
+                <div><input id="modifyFills" type="checkbox" checked>
+                    <label for="modifyFills">Modify Fills</label></div>
+                
+                <button>Download Result</button></div>
+            <div class="rightControls svelte-9mofgm"><input id="svgHeight" type="range" orient="vertical" value="60">
+                <label for="svgHeight">SVG Height</label></div></div>
+        <h2>Color Picker</h2>
+        <div class="colorPicker svelte-9mofgm"><div class="demo"><div class="color-picker  svelte-13e08g1">
 
-<div class="svgWrapper svelte-uvn0yn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -53 100 100" stroke-width="2"><g fill="none"><ellipse stroke="#66899a" rx="6" ry="44"></ellipse><ellipse stroke="#e1d85d" rx="6" ry="44" transform="rotate(-66)"></ellipse><ellipse stroke="#80a3cf" rx="6" ry="44" transform="rotate(66)"></ellipse><circle stroke="#4b541f" r="44"></circle></g><g fill="#66899a" stroke="white"><circle fill="#80a3cf" r="13"></circle><circle cy="-44" r="9"></circle><circle cx="-40" cy="18" r="9"></circle><circle cx="40" cy="18" r="9"></circle></g></svg>
+	
+
+	<div class="color-picker-controls  svelte-13e08g1" style="background: #fff;"><div class="matrix svelte-1yequwm"><canvas width="300" height="200" class="svelte-1yequwm"></canvas></div>
+
+<div class="tab-bar svelte-13e08g1"><div class="tab  svelte-13e08g1">hsl</div><div class="tab  svelte-13e08g1">hcl</div><div class="tab active svelte-13e08g1">lab</div><div class="tab  svelte-13e08g1">rgb</div></div>
+
+<div class="group svelte-13e08g1"><div class="slider svelte-13e08g1"><input type="radio" value="lab.l" id="lab-l" class="svelte-13e08g1" checked>
+			<label for="lab-l" class="svelte-13e08g1">L</label>
+			<div class="scrollbar svelte-hpdzxt"><canvas width="185" height="20" class="svelte-hpdzxt"></canvas></div>
+
+			<input type="number" value="0" min="0" max="100" class="svelte-1s5g5ru">
+		</div><div class="slider svelte-13e08g1"><input type="radio" value="lab.a" id="lab-a" class="svelte-13e08g1">
+			<label for="lab-a" class="svelte-13e08g1">A</label>
+			<div class="scrollbar svelte-hpdzxt"><canvas width="185" height="20" class="svelte-hpdzxt"></canvas></div>
+
+			<input type="number" value="0" min="-160" max="160" class="svelte-1s5g5ru">
+		</div><div class="slider svelte-13e08g1"><input type="radio" value="lab.b" id="lab-b" class="svelte-13e08g1">
+			<label for="lab-b" class="svelte-13e08g1">B</label>
+			<div class="scrollbar svelte-hpdzxt"><canvas width="185" height="20" class="svelte-hpdzxt"></canvas></div>
+
+			<input type="number" value="0" min="-160" max="160" class="svelte-1s5g5ru">
+		</div>
+</div>
+
+<div class="group svelte-13e08g1"><div class="text svelte-13e08g1"><label for="hex" class="svelte-13e08g1">Hex</label>
+		<input id="hex" value="#000000" style="width: 250px;" class="svelte-12fjc37"></div></div></div>
+</div></div></div></div>
+    <div class="rightSide svelte-9mofgm"><h2>Swatches</h2>
+        <div class="swatches svelte-9mofgm"><p style="margin: 24px">No color found in your svg element
+            </p></div>
+        <h2>SVG</h2>
+        <div class="svgWrapper svelte-9mofgm"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -53 100 100" stroke-width="2"><g fill="none"><ellipse stroke="#66899a" rx="6" ry="44"></ellipse><ellipse stroke="#e1d85d" rx="6" ry="44" transform="rotate(-66)"></ellipse><ellipse stroke="#80a3cf" rx="6" ry="44" transform="rotate(66)"></ellipse><circle stroke="#4b541f" r="44"></circle></g><g fill="#66899a" stroke="white"><circle fill="#80a3cf" r="13"></circle><circle cy="-44" r="9"></circle><circle cx="-40" cy="18" r="9"></circle><circle cx="40" cy="18" r="9"></circle></g></svg></div></div>
 </div>
 
 
