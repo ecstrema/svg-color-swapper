@@ -1,8 +1,6 @@
 <script lang="ts">
     import { ColorPicker, Color } from 'svelte-colorpick'
     export let color = '#000';
-    export let showHex = false;
-    export let collapse = false;
 
     $: colorObj = Color.hex(color)
 
@@ -14,8 +12,19 @@
         dispatch('change', {color: colorObj.toHex()});
     }
 
-    const showSliders= {
+    const showSliders = {
+        "hsl.h": true,
+        "hsl.s": true,
+        "hsl.l": true,
+        "hcl.h": true,
+        "hcl.c": true,
+        "hcl.l": true,
         "lab.l": true,
+        "lab.a": true,
+        "lab.b": true,
+        "rgb.r": true,
+        "rgb.g": true,
+        "rgb.b": true,
     }
 </script>
 
@@ -24,24 +33,24 @@
     bind:color={colorObj}
     background='#fff'
 
-    collapse={collapse}
+    collapse={false}
 
     handleWidth="32"
     handleHeight="32"
 
-    tabbed={false}
+    tabbed={true}
     selectedTab="lab"
 
     selectedDimension="lab.l"
 
     showMatrix="true"
     showSliders={showSliders}
-    bind:showHex={showHex}
+    showHex={true}
     showLabels="true"
     showNumeric="true"
     selectDimensions="true"
 
-    matrixWidth="200"
+    matrixWidth="300"
     matrixHeight="200"
     scrollbarHeight="20"
     />

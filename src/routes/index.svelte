@@ -7,8 +7,6 @@
 
     let svgHeight = 60;
     let svgWrapper: HTMLDivElement;
-    let showHex = false;
-    let collapse = false;
 
     let modifyStrokes = true;
     let modifyFills = true;
@@ -17,7 +15,11 @@
     type ColorData = { [key: string]: ColorTargets };
     let colorData: ColorData = {};
 
+    let currentColor: string = "#000";
+
     $: allColors = Array.from(Object.keys(colorData));
+
+    $: allModifiedColors = Array.from(allColors);
 
     $: if (svgWrapper) svgWrapper.setAttribute("style", "height: " + svgHeight + "vh");
 
@@ -52,6 +54,12 @@
         }
     }
 
+    function updateColors() {
+        recursively(svgWrapper, getColors);
+        colorData = colorData;
+        currentColor = Array.from(Object.keys(colorData))[0];
+    }
+
 
     function onFileChange(ev: Event) {
         const target = ev.target as HTMLInputElement;
@@ -70,22 +78,21 @@
             // reset color data
             colorData = {};
 
-            recursively(svgWrapper, getColors);
-            if (Object.keys(colorData).length > 10) {
-                collapse = true;
-            }
-            colorData = colorData;
+            updateColors();
         }
         reader.readAsText(file);
     }
 
     /**
-     * Sets all of the svg elements with initialColor to the new color.
-     *
-     * The model doesn't update to the new color, so that no confusion is possible
-     * between the modified colors.
-     */
+    * Sets all of the svg elements with initialColor to the new color.
+    *
+    * The model doesn't update to the new color, so that no confusion is possible
+    * between the modified colors.
+    */
     function colorChanged(initialColor: string, newColor: string) {
+        // Happens on init.
+        if (!initialColor || !newColor) return;
+
         initialColor = initialColor.toUpperCase();
         newColor = newColor.toUpperCase();
 
@@ -108,6 +115,9 @@
                 s.setAttribute("stroke", newColor);
             }
         }
+
+        const i = allColors.indexOf(initialColor);
+        if (i !== -1) allModifiedColors[i] = newColor;
     }
 
     function download() {
@@ -120,82 +130,128 @@
         a.click();
     }
 
-    onMount(() => {
-        recursively(svgWrapper, getColors);
-        colorData = colorData;
-    })
+    onMount(updateColors)
 </script>
 
-
-<div class="controls">
-    <div class="specificControls">
-        <input type="file" accept=".svg" on:change="{onFileChange}" />
-        <div>
-            <input id='collapse' type='checkbox' bind:checked={collapse}/>
-            <label for='collapse'>collapse</label>
+<div class="container">
+    <div class="leftSide">
+        <h2>Controls</h2>
+        <div class="controls">
+            <div class="leftControls">
+                <input type="file" accept=".svg" on:change="{onFileChange}" />
+                <div>
+                    <input id='modifyStrokes' type='checkbox' bind:checked={modifyStrokes}/>
+                    <label for='modifyStrokes'>Modify Strokes</label>
+                </div>
+                <div>
+                    <input id='modifyFills' type='checkbox' bind:checked={modifyFills}/>
+                    <label for='modifyFills'>Modify Fills</label>
+                </div>
+                {#if !modifyFills && !modifyStrokes}
+                <p style="color: red;">Nothing will be modified, since neither the strokes nor the fills will be.</p>
+                {/if}
+                <button on:click={download}>Download Result</button>
+            </div>
+            <div class="rightControls">
+                <input id="svgHeight" type="range" orient="vertical" bind:value={svgHeight}/>
+                <label for='svgHeight'>SVG Height</label>
+            </div>
         </div>
-        <div>
-            <input id='showHex' type='checkbox' bind:checked={showHex}/>
-            <label for='showHex'>Show Hex</label>
+        <h2>Color Picker</h2>
+        <div class="colorPicker">
+            <Colorpick color="{currentColor}" on:change={(ev) => colorChanged(currentColor, ev.detail.color)}/>
         </div>
-        <div>
-            <input id='modifyStrokes' type='checkbox' bind:checked={modifyStrokes}/>
-            <label for='modifyStrokes'>Modify Strokes</label>
-        </div>
-        <div>
-            <input id='modifyFills' type='checkbox' bind:checked={modifyFills}/>
-            <label for='modifyFills'>Modify Fills</label>
-        </div>
-        {#if !modifyFills && !modifyStrokes}
-            <p style="color: red;">Nothing will be modified, since neither the strokes nor the fills will be.</p>
-        {/if}
-        <button on:click={download}>Download Result</button>
     </div>
-    <input type="range" orient="vertical" bind:value={svgHeight}/>
-    <div class="colors" style="{collapse ? 'overflow: visible;' : 'overflow: auto;'}" >
-        {#each allColors as color (color)}
-        <Colorpick color="{color}"
-            on:change={(ev) => colorChanged(color, ev.detail.color)}
-            showHex={showHex}
-            collapse={collapse}
-            />
-        {:else}
-        <p style="margin: 24px">
-            No color found in your svg element
-        </p>
-        {/each}
+    <div class="rightSide">
+        <h2>Swatches</h2>
+        <div class="swatches">
+            {#each allModifiedColors as color, index (color)}
+            <button
+                class="swatch"
+                on:click="{() => currentColor = color}"
+                class:selectedSwatch="{currentColor === color}"
+                >
+                <div class="swatchPart" style="background: {allColors[index]};"/>
+                <div class="swatchPart" style="background: {color};"/>
+            </button>
+            {:else}
+            <p style="margin: 24px">
+                No color found in your svg element
+            </p>
+            {/each}
+        </div>
+        <h2>SVG</h2>
+        <div bind:this={svgWrapper} class="svgWrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -53 100 100" stroke-width="2"><g fill="none"><ellipse stroke="#66899a" rx="6" ry="44"/><ellipse stroke="#e1d85d" rx="6" ry="44" transform="rotate(-66)"/><ellipse stroke="#80a3cf" rx="6" ry="44" transform="rotate(66)"/><circle stroke="#4b541f" r="44"/></g><g fill="#66899a" stroke="white"><circle fill="#80a3cf" r="13"/><circle cy="-44" r="9"/><circle cx="-40" cy="18" r="9"/><circle cx="40" cy="18" r="9"/></g></svg>
+        </div>
     </div>
-</div>
-
-<div bind:this={svgWrapper} class="svgWrapper">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-52 -53 100 100" stroke-width="2"><g fill="none"><ellipse stroke="#66899a" rx="6" ry="44"/><ellipse stroke="#e1d85d" rx="6" ry="44" transform="rotate(-66)"/><ellipse stroke="#80a3cf" rx="6" ry="44" transform="rotate(66)"/><circle stroke="#4b541f" r="44"/></g><g fill="#66899a" stroke="white"><circle fill="#80a3cf" r="13"/><circle cy="-44" r="9"/><circle cx="-40" cy="18" r="9"/><circle cx="40" cy="18" r="9"/></g></svg>
 </div>
 
 <style>
-    .specificControls {
+    .container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        height: 100vh;
+    }
+    .leftSide {
         display: flex;
         flex-direction: column;
-    }
-    .controls {
-        display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    .colors {
+    .controls {
         display: flex;
+        flex-direction: row;
         align-items: center;
-        flex-wrap: wrap;
-        flex-grow: 2;
-        margin: 12px;
-        justify-content: center;
-        max-height: 50vh;
     }
-    input[type=range][orient=vertical] {
-        writing-mode: bt-lr; /* IE */
-        -webkit-appearance: slider-vertical; /* WebKit */
+    .leftControls {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        align-items: flex-start;
+    }
+    .rightControls {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    .colorPicker {
+        flex-grow: 1;
+    }
+    .rightSide {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .swatches {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+    .swatch {
+        width: 24px;
+        height: 48px;
+        margin: 4px;
+        border-radius: 12px;
+        border: 1px solid black;
+        padding: 0px;
+    }
+    .swatch:hover, .selectedSwatch {
+        border: 1px solid #ff0000;
+    }
+    .swatchPart {
+        width: 100%;
+        height: 50%;
+        border-radius: 12px;
+        border: 1px solid black;
     }
     .svgWrapper {
-        text-align: center;
+        flex-grow: 1;
     }
     :global(svg) {
         height: 100%;
