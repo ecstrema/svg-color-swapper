@@ -1,6 +1,8 @@
 import preprocess from 'svelte-preprocess';
 import adapter from '@sveltejs/adapter-static';
 
+const production = process.env.NODE_ENV === 'production';
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	// Consult https://github.com/sveltejs/svelte-preprocess
@@ -16,7 +18,7 @@ const config = {
 
 		// Comment the paths if wants to run in dev mode.
 		paths: {
-			base: '/SVGColorSwap'
+			base: production ? '/SVGColorSwap' : '',
 		},
 		appDir: "internal",
 
