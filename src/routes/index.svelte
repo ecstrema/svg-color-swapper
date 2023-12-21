@@ -121,7 +121,7 @@
     }
 
     function download() {
-        const svg = svgWrapper.outerHTML;
+        const svg = svgWrapper.innerHTML;
         const blob = new Blob([svg], { type: "image/svg+xml" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
