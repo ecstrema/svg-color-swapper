@@ -1,0 +1,8 @@
+/* apply a dark background if the user prefers dark mode */
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background-color: #333;
+    color: #fff;
+  }
+}
