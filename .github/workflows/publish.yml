@@ -26,6 +26,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      - name: Install dependencies
+        run: bun install
+
       - run: bun generate
 
       - name: deploy

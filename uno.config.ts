@@ -1,15 +1,7 @@
 // uno.config.ts
-import {
-  defineConfig,
-  presetIcons,
-  presetUno,
-  presetTypography,
-} from 'unocss'
+// @eslint-disable
+import { defineConfig, presetIcons, presetUno, presetTypography } from 'unocss'
 
 export default defineConfig({
-  presets: [
-    presetUno({ dark: "media" }),
-    presetIcons(),
-    presetTypography(),
-  ],
+  presets: [presetUno({ dark: 'media' }), presetIcons(), presetTypography()],
 })
