@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@nuxtjs/pwa": "^3.3.5",
-    "@unocss/nuxt": "^0.58.0",
+    "@unocss/nuxt": "^0.58.3",
     "@unocss/reset": "^0.58.0",
     "color": "^4.2.3",
     "core-js": "^3.25.3",
